@@ -4,23 +4,35 @@ import Image from 'next/image'
 import { ApiClient } from '@/ApiClient/client'
 import { useEffect, useState } from "react"
 import ForecastCard from '@/components/ForecastCard'
+import SearchBar from '@/components/SearchBar'
+import Title from '@/components/Title'
+import NoCityEntered from '@/components/NoCityEntered'
+
+
 
 export default function Home() {
   const apiClient = new ApiClient();
 
-  const [city, setCity] = useState("sheffield");
+  const [city, setCity] = useState();
+  const [title, setTitle] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
   const [forecast, setForecast] = useState([]);
-  const [filteredForecasts, setFilteredForecasts] = useState([])
-  
+  const [filteredForecasts, setFilteredForecasts] = useState([]);
+  const [realCity, setRealCity] = useState (true); 
 
   useEffect(() => {
     async function fetchData() {
       try {
         const data = await apiClient.getForecast(city)
         setForecast(data.list);
-        console.log(data.list)
+        setRealCity(true)
+        setTitle(city)
+        
+        // console.log(data.list)
       } catch (error) {
-      console.log(await apiClient.getForecast("sheffield"))
+      
+      setRealCity(false)
+      console.log(await apiClient.getForecast(city))
     }
   }
     fetchData();
@@ -36,24 +48,83 @@ export default function Home() {
     console.log(filteredForecasts)
   }, [forecast])
   
+  const [noCity, setNoCity] = useState(false)
+
+  const handleCitySearch = (searchTerm) => {
+    if (searchTerm === "") {
+      console.log("no city")
+      setNoCity(true)
+    } else {
+      setHasSearched(true);
+      setCity(searchTerm)
+      console.log('city updated')
+      setNoCity(false)
+    }
+    console.log(`hasSearched = ${hasSearched}`)
+  }
+
+  // useEffect(() => {
+  //   console.log(city)
+  // }, [city])
 
 
-  
+
 
   return (
-    <main className="flex flex-col items-center justify-between min-h-screen p-24">
-      {filteredForecasts.map((item, index) => (
-        <ForecastCard 
-        key={index} 
-        day={formatDay(item.dt)}
-        date={formatDate(item.dt)}
-        summary={item.weather[0].description}
-        maxTemp={`${item.main.temp_max} °C`}
-        minTemp={`${item.main.temp_min} °C`}
-        windSpeed={`${item.wind.speed} m/s`}
-        icon={`https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`}
+
+    <>
+    <SearchBar 
+      handleCitySearch={handleCitySearch}
+    />
+
+
+    <main >
+
+      {noCity && !hasSearched && <NoCityEntered />}
+      {hasSearched && !title && <NoCityEntered />}
+      
+
+      <div className='flex flex-col justify-center w-screen'>
+        <Title
+          city={title}
+          country={title}
         />
-      ))}
+      </div>
+
+    
+<div className="flex flex-wrap justify-center gap-4 p-4">
+  
+        {filteredForecasts.map((item, index) => {
+          if (!item || !item.dt_txt) {
+            return null;
+          }
+          const date = new Date(item.dt_txt.replace(/ /, "T"));
+          const day = date.toLocaleDateString("en-gb", { weekday: "long" });
+          const formattedDate = date.toLocaleDateString("en-gb", {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+          });
+  
+          const windSpeedMph = (item.wind.speed * 2.23694).toFixed(1);
+  
+    return (
+          <ForecastCard
+          key={index}
+          day={day}
+          date={formattedDate}
+          summary={item.weather[0].description}
+          maxTemp={`${item.main.temp_max} °C`}
+          minTemp={`${item.main.temp_min} °C`}
+          currentTemp={`${parseFloat(item.main.temp).toFixed(0)}`} 
+          windSpeed={`${windSpeedMph} MPH`}
+          icon={`https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`}
+          />
+    );
+  })}
+  </div>
     </main>
-  );
+
+    </>
+    );
 }

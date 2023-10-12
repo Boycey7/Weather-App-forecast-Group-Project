@@ -22,6 +22,8 @@ export class ApiClient {
   }
   
   async getForecast(city) {
+    
+try {
     if (!this.apiKey || !this.baseUrl) {
         throw new Error("API configuration not set");
     }
@@ -30,6 +32,10 @@ export class ApiClient {
     const response = await this.getRequest(url)
 
     return response.data;
+} catch (error) {
+    console.log(error)
+}
+    
 }
 
 }
