@@ -14,6 +14,7 @@ export default function Home() {
   const apiClient = new ApiClient();
 
   const [city, setCity] = useState();
+  const [country, setCountry] = useState("");
   const [title, setTitle] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [forecast, setForecast] = useState([]);
@@ -24,7 +25,9 @@ export default function Home() {
     async function fetchData() {
       try {
         const data = await apiClient.getForecast(city)
+        console.log("API Response:", data);
         setForecast(data.list);
+        setCountry(data.city.country);
         setRealCity(true)
         setTitle(city)
         
@@ -87,7 +90,7 @@ export default function Home() {
       <div className='flex flex-col justify-center w-screen'>
         <Title
           city={title}
-          country={title}
+          country={country}
         />
       </div>
 
@@ -116,7 +119,8 @@ export default function Home() {
           summary={item.weather[0].description}
           maxTemp={`${item.main.temp_max} °C`}
           minTemp={`${item.main.temp_min} °C`}
-          currentTemp={`${parseFloat(item.main.temp).toFixed(0)}`} 
+          currentTemp={`${parseFloat(item.main.temp).toFixed(0)}`}
+          humidity={`${item.main.humidity} %`} 
           windSpeed={`${windSpeedMph} MPH`}
           icon={`https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`}
           />
