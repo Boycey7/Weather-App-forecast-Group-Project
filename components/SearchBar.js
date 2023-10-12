@@ -26,7 +26,7 @@ const SearchBar = ({ handleCitySearch, city }) => {
             }}
           ></input>
           <button className="px-2 mt-2 rounded-md bg-slate-600 text-white-600"
-          type="submit">Go!</button>
+          type="submit">SEARCH</button>
         </form>
       </div>
     </div>

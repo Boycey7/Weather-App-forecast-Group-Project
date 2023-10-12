@@ -2,7 +2,7 @@ import React from 'react'
 
 const ForecastCard = ({day, date, summary, maxTemp, minTemp, windSpeed, icon, currentTemp, humidity}) => {
   return (
-    <div className="p-6 space-y-4 rounded-lg shadow-lg bg-gradient-to-br from-blue-200 to-blue-500">
+    <div className="p-6 space-y-4 transition-transform transform rounded-lg shadow-lg bg-gradient-to-br from-blue-200 to-blue-500 hover:scale-105">
     <div className="flex items-center justify-between">
       <div>
         <h2 className="text-2xl font-semibold text-white">{day}</h2>
