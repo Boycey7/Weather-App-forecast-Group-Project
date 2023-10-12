@@ -16,10 +16,10 @@ const SearchBar = ({ handleCitySearch, city }) => {
             setFormValues("")
           }}
         >
-          <label className="mt-2 text-lg">Enter City: </label>
+          <label className="mt-2 text-xl font-bold">.Weather</label>
           <input
             className="px-2 mx-2 mt-2 rounded-md text-slate-700"
-            placeholder="your city"
+            placeholder="Enter a city and country code"
             value={formValues}
             onChange={(event) => {
               setFormValues(event.target.value);

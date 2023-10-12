@@ -7,6 +7,7 @@ import ForecastCard from '@/components/ForecastCard'
 import SearchBar from '@/components/SearchBar'
 import Title from '@/components/Title'
 import NoCityEntered from '@/components/NoCityEntered'
+import Footer from '@/components/Footer'
 
 
 
@@ -14,7 +15,7 @@ export default function Home() {
   const apiClient = new ApiClient();
 
   const [city, setCity] = useState();
-  const [country, setCountry] = useState("");
+  const [country, setCountry] = useState();
   const [title, setTitle] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [forecast, setForecast] = useState([]);
@@ -29,11 +30,9 @@ export default function Home() {
         setForecast(data.list);
         setCountry(data.city.country);
         setRealCity(true)
-        setTitle(city)
-        
+        setTitle(data.city.name)
         // console.log(data.list)
       } catch (error) {
-      
       setRealCity(false)
       console.log(await apiClient.getForecast(city))
     }
@@ -75,13 +74,15 @@ export default function Home() {
 
   return (
 
-    <>
-    <SearchBar 
-      handleCitySearch={handleCitySearch}
-    />
+    <div className="flex flex-col min-h-screen">  
+            
+            
+            <SearchBar 
+                handleCitySearch={handleCitySearch}
+            />
 
 
-    <main >
+<main className="flex-grow">
 
       {noCity && !hasSearched && <NoCityEntered />}
       {hasSearched && !title && <NoCityEntered />}
@@ -93,7 +94,7 @@ export default function Home() {
           country={country}
         />
       </div>
-
+     
     
 <div className="flex flex-wrap justify-center gap-4 p-4">
   
@@ -124,11 +125,16 @@ export default function Home() {
           windSpeed={`${windSpeedMph} MPH`}
           icon={`https://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`}
           />
+        
     );
+    
   })}
+  
   </div>
     </main>
-
-    </>
+    <Footer />
+    </div>
+    
     );
 }
+
