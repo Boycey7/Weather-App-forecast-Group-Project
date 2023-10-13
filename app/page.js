@@ -12,16 +12,19 @@ import Footer from "@/components/Footer";
 export default function Home() {
   const apiClient = new ApiClient();
 
-  const [city, setCity] = useState();
+  const [city, setCity] = useState(null);
   const [country, setCountry] = useState();
   const [title, setTitle] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [forecast, setForecast] = useState([]);
   const [filteredForecasts, setFilteredForecasts] = useState([]);
   const [realCity, setRealCity] = useState(true);
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     async function fetchData() {
+      setIsLoading(true)
+      
       try {
         const data = await apiClient.getForecast(city);
         console.log("API Response:", data);
@@ -34,9 +37,20 @@ export default function Home() {
         setRealCity(false);
         console.log(await apiClient.getForecast(city));
       }
+      finally {
+        setIsLoading(false)
+        setHasSearched(true);
+      }
     }
     fetchData();
+    
   }, [city]);
+
+  useEffect(() => {
+
+    console.log(`isLoading is ${isLoading}`)
+
+  }, [isLoading])
 
   useEffect(() => {
     const arrayOfDays = [];
@@ -54,7 +68,7 @@ export default function Home() {
       console.log("no city");
       setNoCity(true);
     } else {
-      setHasSearched(true);
+      
       setCity(searchTerm);
       console.log("city updated");
       setNoCity(false);
@@ -71,8 +85,8 @@ export default function Home() {
       <SearchBar handleCitySearch={handleCitySearch} />
 
       <main className="flex-grow">
-        {noCity && !hasSearched && <NoCityEntered />}
-        {hasSearched && !title && <NoCityEntered />}
+        {!hasSearched && noCity && <NoCityEntered />}
+        {!isLoading && noCity && <NoCityEntered />}
 
         <div className="flex flex-col justify-center w-screen">
           <Title city={title} country={country} />
